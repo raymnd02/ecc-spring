@@ -12,15 +12,7 @@ import java.io.Serializable;
 @Table
 public class Contact implements Serializable{
 	@Id
-	@SequenceGenerator(
-		name = "contact_sequence",
-		sequenceName = "contact_sequence",
-		allocationSize = 1
-	)
-	@GeneratedValue(
-		strategy = GenerationType.SEQUENCE,
-		generator = "contact_sequence"
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int contactId;
 	private long landLine;
 	private long mobileNumber;

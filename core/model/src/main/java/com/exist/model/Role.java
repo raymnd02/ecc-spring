@@ -15,19 +15,14 @@ import java.io.Serializable;
 @Table
 public class Role implements java.io.Serializable{
 	@Id
-	@SequenceGenerator(
-		name = "role_sequence",
-		sequenceName = "role_sequence",
-		allocationSize = 1
-	)
-	@GeneratedValue(
-		strategy = GenerationType.SEQUENCE,
-		generator = "role_sequence"
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int roleId;
 	private String role;
 	
-	@ManyToMany(targetEntity = Person.class, mappedBy = "rolePerson", cascade = CascadeType.ALL)
+	@ManyToMany(mappedBy = "rolePerson", 
+		cascade = CascadeType.ALL,
+		fetch = FetchType.LAZY)
+
 	private List<Person> personRole;
 	
 	public Role(){}

@@ -35,10 +35,10 @@ public class ContactResource {
 		return contactService.getContacts();
 	}
 
-	@PostMapping
-	public void addContact(@RequestBody Contact contact){
-		contactService.addContact(contact);
-	}
+	// @PostMapping
+	// public void addContact(@RequestBody Contact contact){
+		// contactService.addContact(contact);
+	// }
 	
 	@DeleteMapping(path = "{contactId}")
 	public void deleteContact(@PathVariable("contactId") int contactId) {

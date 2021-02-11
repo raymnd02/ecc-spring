@@ -15,21 +15,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
-
+import javax.persistence.Column;
 
 @Entity
 @Table
 public class Person {
 	@Id
-	@SequenceGenerator(
-		name = "person_sequence",
-		sequenceName = "person_sequence",
-		allocationSize = 1
-	)
-	@GeneratedValue(
-		strategy = GenerationType.SEQUENCE,
-		generator = "person_sequence"
-	)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long personId;
 
 	private String firstName;
@@ -41,25 +33,28 @@ public class Person {
 	
 	private int streetNo;
 	private String barangay;
+	
+	@Column(name = "municipality_city")
 	private String municipalityOrCity;
 	private int zipcode;
 	
 	private Date birthday;
+	@Column(name = "grade_weighted_average")
 	private double gradeWeightedAverage;
 	private Date dateHired;
 	private boolean currentEmployed;
 	
 	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "person_contact",referencedColumnName = "personId")
+	@JoinColumn(name = "person_id",referencedColumnName = "personId")
 	private List<Contact> contact = new ArrayList<>();
 	
 	
-	@ManyToMany(targetEntity = Role.class,cascade = CascadeType.ALL )
-    // @JoinTable(
-            // name = "person_role",
-            // joinColumns = {@JoinColumn(name = "personId")},
-            // inverseJoinColumns = {@JoinColumn(name = "roleId")}
-    // )
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "person_role",
+            joinColumns = {@JoinColumn(name = "personId")},
+            inverseJoinColumns = {@JoinColumn(name = "roleId")}
+    )
 	private List<Role> rolePerson = new ArrayList<>();
 	
 	public Person(){}

@@ -1,7 +1,10 @@
 package com.exist.service;
 import java.util.Optional;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.*;
 import com.exist.model.Role;
+import com.exist.model.Person;
 import com.exist.dao.RoleDao;
 
 import org.springframework.stereotype.Service;
@@ -22,7 +25,16 @@ public class RoleService {
 	}
 	
 	public List<Role> getRoles() {
-		return roleDao.findAll();
+		List<Role> returnRoles = roleDao.findAll();
+		returnRoles.stream()
+			.forEach(rolePerson -> {
+				rolePerson.getPersonRole().stream()
+					.forEach(eachPerson -> {
+						List<Role> roles = new ArrayList<>();
+						eachPerson.setRole(roles);
+					});
+			});
+		return returnRoles;
 	}
 	
 	public void addRole(Role role) {
@@ -52,7 +64,26 @@ public class RoleService {
 		if(!exists) {
 			throw new IllegalStateException("Role id " + roleId + " does not exists");
 		}
+		// Optional<Role> roleOptional = roleDao.findById(roleId);
+		// List<Person> persons = new ArrayList<>();
+		// Role role = roleOptional.get();
+		// role.setPersonRole(persons);
+		// roleDao.save(role);
 		roleDao.deleteById(roleId);
+	}
+	
+	public Role findById(int roleId) {
+		Optional<Role> roleOptional = roleDao.findById(roleId);
+		if(!roleOptional.isPresent()) {
+			throw new IllegalStateException("Role id " + roleId + " does not exists");
+		}
+		return roleOptional.get();
+	}
+	public void save(Role role) {
+		Role updateRole = new Role();
+		updateRole.setRoleId(role.getRoleId());
+		updateRole.setRole(role.getRole());
+		roleDao.save(updateRole);
 	}
 	
 }

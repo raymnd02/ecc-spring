@@ -25,7 +25,8 @@
 	<modules>
 		<module>app</module>
 		<module>core</module>
-		<!-- <module>model</module> -->
+		<module>infra</module>
+		<module>util</module>
 	</modules>
 	
 	<dependencyManagement>
@@ -47,12 +48,6 @@
 			<version>42.2.18</version>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- <dependency> -->
-			<!-- <groupId>org.projectlombok</groupId> -->
-			<!-- <artifactId>lombok</artifactId> -->
-			<!-- <version>${org.springframework-version}</version> -->
-			<!-- <optional>true</optional> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -85,8 +80,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${org.springframework-version}</version>
 				<configuration>
-				    <mainClass>app/src/main/java/com/exist/ecc/app/App.java</mainClass>
+				    <mainClass>com.exist.ecc.app.App</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

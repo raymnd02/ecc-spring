@@ -7,6 +7,7 @@ import com.exist.model.Contact;
 import com.exist.model.Role;
 import com.exist.dao.PersonDao;
 import java.util.stream.*;
+import java.util.Iterator;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -25,21 +26,16 @@ public class PersonService {
 	}
 	
 	public List<Person> getPersons() {
-		List<Person> persons = new ArrayList<>();
-		List<Person> nullRolePerson = personDao.findAll();
-		nullRolePerson.stream()
+		List<Person> returnPerson = personDao.findAll();
+		returnPerson.stream()
 			.forEach(nullperson -> {
-				List<Role> roles = new ArrayList<>();
 				nullperson.getRole().stream()
 					.forEach(eachRole -> {
-						Role role = new Role();
-						role.setRoleId(eachRole.getRoleId());
-						role.setRole(eachRole.getRole());
-						roles.add(role);
+						List<Person> persons = new ArrayList();
+						eachRole.setPersonRole(persons);
 					});
-				nullperson.setRole(roles);
 			});
-		return nullRolePerson;
+		return returnPerson;
 	}
 	
 	public void addPerson(Person person) {
@@ -52,9 +48,13 @@ public class PersonService {
 	
 	public void deletePerson(Long personId) {
 		boolean exists = personDao.existsById(personId);
+		List<Role> role = new ArrayList<>();
 		if(!exists) {
 			throw new IllegalStateException("Person id " + personId + " does not exists");
 		}
+		Optional<Person> personOptional = personDao.findById(personId);
+		personOptional.get().setRole(role);
+		personDao.save(personOptional.get());
 		personDao.deleteById(personId);
 	}
 	
@@ -70,11 +70,12 @@ public class PersonService {
 		}
 		Person existedPerson = personDao.findById(personId).get();
 		person.setContact(existedPerson.getContact());
+		person.setRole(existedPerson.getRole());
 		person.setPersonId(personId);
 		personDao.save(person);
 	}
 	
-		public void addContactPerson(Contact contact,Long personId) {
+	public void addContactPerson(Contact contact,Long personId) {
 		boolean exists = personDao.existsById(personId);
 		if(!exists) {
 			throw new IllegalStateException("Person id " + personId + " does not exists");
@@ -83,6 +84,68 @@ public class PersonService {
 		List<Contact> contacts = person.getContact();
 		contacts.add(contact);
 		person.setContact(contacts);
+		personDao.save(person);
+	}
+	
+	public void addPersonRole(Long personId,Role personRole){
+		boolean roleExist = false;
+		Optional<Person> personOptional = personDao.findById(personId);
+		if(!personOptional.isPresent()) {
+			throw new IllegalStateException("Person id " + personId + " does not exists");
+		}
+		
+		List<Role> roles = personOptional.get().getRole(); 
+		for(Role role : roles) {
+			roleExist = (role.getRoleId() == personRole.getRoleId() ? true : false);
+		}
+		if(roleExist) {
+			throw new IllegalStateException("Person has existing roles!!");
+		}
+		roles.add(personRole);
+		Person person = personOptional.get();
+		person.setRole(roles);
+		personDao.save(person);
+	}
+	
+	public void deleteRoleConstraints(Role role) {
+		List<Person> persons = personDao.findAll();
+		persons.stream()
+			.forEach(person -> {
+				
+				Iterator<Role> itr = person.getRole().iterator();
+				while (itr.hasNext()) { 
+					Role roleToBeDeleted = itr.next(); 
+					if (roleToBeDeleted.getRoleId() == role.getRoleId()) { 
+						itr.remove(); 
+					} 
+				}
+				personDao.save(person);
+			});
+	}
+	public void deletePersonRole(Long personId,int roleId) {
+		boolean roleExist = false;
+		Optional<Person> personOptional = personDao.findById(personId);
+		if(!personOptional.isPresent()) {
+			throw new IllegalStateException("Person id " + personId + " does not exists");
+		}
+		
+		List<Role> roles = personOptional.get().getRole(); 
+		for(Role role : roles) {
+			roleExist = (role.getRoleId() == roleId ? true : false);
+		}
+		if(!roleExist) {
+			throw new IllegalStateException("Person has doesn't have roles with " + roleId + " id!!");
+		}
+		Iterator<Role> itr = roles.iterator();
+		while (itr.hasNext()) { 
+			Role roleToBeDeleted = itr.next(); 
+			if (roleToBeDeleted.getRoleId() == roleId) { 
+				itr.remove(); 
+			} 
+		}
+		
+		Person person = personOptional.get();
+		person.setRole(roles);
 		personDao.save(person);
 	}
 }
