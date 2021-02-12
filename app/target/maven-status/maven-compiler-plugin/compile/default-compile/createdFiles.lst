@@ -1,0 +1,4 @@
+com\exist\ecc\app\PersonResource.class
+com\exist\ecc\app\ContactResource.class
+com\exist\ecc\app\RoleResource.class
+com\exist\ecc\app\App.class

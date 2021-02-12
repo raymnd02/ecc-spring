@@ -2,9 +2,12 @@ package com.exist.service;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import com.exist.model.Person;
 import com.exist.model.Contact;
 import com.exist.model.Role;
+import com.exist.utils.Utils;
 import com.exist.dao.PersonDao;
 import java.util.stream.*;
 import java.util.Iterator;
@@ -27,15 +30,7 @@ public class PersonService {
 	
 	public List<Person> getPersons() {
 		List<Person> returnPerson = personDao.findAll();
-		returnPerson.stream()
-			.forEach(nullperson -> {
-				nullperson.getRole().stream()
-					.forEach(eachRole -> {
-						List<Person> persons = new ArrayList();
-						eachRole.setPersonRole(persons);
-					});
-			});
-		return returnPerson;
+		return Utils.getFixList(returnPerson);
 	}
 	
 	public void addPerson(Person person) {
@@ -147,5 +142,40 @@ public class PersonService {
 		Person person = personOptional.get();
 		person.setRole(roles);
 		personDao.save(person);
+	}
+	
+	public List<Person> getPersonsOrderByLastName() {
+		Optional<List<Person>> orderByLastName = personDao.findPersonOrderByLastName();
+		if(!orderByLastName.isPresent()) {
+			throw new IllegalStateException("No Records Found!!");
+		}
+		
+		
+		return Utils.getFixList(orderByLastName.get());
+	}
+	
+	public List<Person> getPersonsOrderByDateHired() {
+		Optional<List<Person>> orderByDateHired = personDao.findPersonOrderByDateHired();
+		if(!orderByDateHired.isPresent()) {
+			throw new IllegalStateException("No Records Found!!");
+		}
+		
+		return Utils.getFixList(orderByDateHired.get());
+	}
+	
+	public List<Person> getPersonsOrderByGradeWeightedAverage() {
+		List<Person> orderByGradeWeightedAverage = personDao.findAll();
+		if(orderByGradeWeightedAverage.isEmpty()) {
+			throw new IllegalStateException("No Records Found!!");
+		}
+		Collections.sort(orderByGradeWeightedAverage, new Comparator<Person>() {
+			@Override
+			public int compare(Person person1, Person person2) {
+				return Double.compare(person1.getGradeWeightedAverage(), person2.getGradeWeightedAverage());
+			}
+		});
+		
+		
+		return Utils.getFixList(orderByGradeWeightedAverage);
 	}
 }

@@ -52,11 +52,8 @@ public class RoleResource {
 	
 	@DeleteMapping(path = "deleteRole/{roleId}")
 	public void deleteRole(@PathVariable("roleId") int roleId) {
-		// List<Person> persons = new ArrayList<>();
 		Role role = roleService.findById(roleId);
 		personService.deleteRoleConstraints(role);
-		// role.setPersonRole(persons);
-		// roleService.save(role);
 		roleService.deleteRole(roleId);
 	}
 }

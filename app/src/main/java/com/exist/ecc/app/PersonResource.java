@@ -1,5 +1,6 @@
 package com.exist.ecc.app;
 import java.util.List;
+import java.util.ArrayList;
 
 
 import com.exist.service.PersonService;
@@ -39,6 +40,22 @@ public class PersonResource {
 	@GetMapping
 	public List<Person> getPersons() {
 		return personService.getPersons();
+	}
+	
+	@GetMapping(path = "orderBy/{orderBy}")
+	public List<Person> getPersonsOrderBy(@PathVariable("orderBy") String orderBy) {
+		List<Person> person = new ArrayList<>();
+		if(orderBy.equalsIgnoreCase("last name")) {
+			person = personService.getPersonsOrderByLastName();
+		} else if(orderBy.equalsIgnoreCase("gwa")) {
+			person = personService.getPersonsOrderByDateHired();
+		} else if(orderBy.equalsIgnoreCase("date hired")) {
+			person = personService.getPersonsOrderByGradeWeightedAverage();
+		} else {
+			throw new IllegalStateException("cant do that sorting method");
+		}
+		
+		return person;
 	}
 	
 	@PostMapping
