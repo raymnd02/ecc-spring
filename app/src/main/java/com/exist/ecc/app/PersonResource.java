@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -68,7 +69,7 @@ public class PersonResource {
 		personService.deletePerson(personId);
 	}
 	
-	@PostMapping(path = "edit/{personId}")
+	@PutMapping(path = "edit/{personId}")
 	public void editPerson(@RequestBody Person person,@PathVariable("personId") Long personId){
 		personService.editPerson(person,personId);
 	}
@@ -84,7 +85,7 @@ public class PersonResource {
 		personService.addPersonRole(personId,role);
 	}
 	
-	@PutMapping(path = "deletePersonRole/{personId}/{roleId}")
+	@DeleteMapping(path = "deletePersonRole/{personId}/{roleId}")
 	public void deletePersonRole(@PathVariable("personId") Long personId,@PathVariable("roleId") int roleId){
 		personService.deletePersonRole(personId,roleId);
 	}
